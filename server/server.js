@@ -34,7 +34,7 @@ app.post('/usuario', function (req, res) {
 
         res.json({
             ok: '200',
-            msg: 'usuario isertado',
+            msg: 'usuario insertado',
             body: body
         });
     }
