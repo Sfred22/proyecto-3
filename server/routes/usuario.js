@@ -39,7 +39,7 @@ app.post('/usuario', function (req, res) {
         edad: body.edad,
         curp: body.curp,
         telefono: body.telefono,
-        email: body.email
+        mail: body.mail
     });
 
     usr.save((err, usuario) => {
@@ -60,7 +60,7 @@ app.post('/usuario', function (req, res) {
   
 app.put('/usuario/:id', function (req, res) {
    let id = req.params.id;
-   let body = _.pick(req.body, ['edad', 'telefono', 'email']);
+   let body = _.pick(req.body, ['edad', 'telefono', 'mail']);
 
    Usuario.findByIdAndUpdate(id, body, 
     { new: true, runValidators: true, context: 'query' }, 
@@ -81,11 +81,23 @@ app.put('/usuario/:id', function (req, res) {
 });
   
 app.delete('/usuario/:id', function (req, res) {
-    let id = req.params.id
-    res.json({
-        ok: '200',
-        msg: 'usuario eliminado',
-        id: id
+    let id = req.params.id;
+
+    Usuario.findByIdAndUpdate(id, 
+        { activo: false }, {new: true, runValidators: true, context: 'query' }, 
+        (err, usuario) => {
+        if(err){
+            return res.status(400).json({
+                ok: false,
+                msg: 'ocurrio un error al eliminar',
+                err 
+            });
+        }
+        res.json({
+            ok: true,
+            msg: 'usuario eliminado con exito',
+            usuario
+        });
     });
 });
 

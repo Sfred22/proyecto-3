@@ -32,7 +32,7 @@ let usuarioSchema = new Schema({
         unique: true,
         required: false
     },
-    email: {
+    mail: {
         type: String,
         unique: true,
         required: [true, 'ingrese un email porfavor']
