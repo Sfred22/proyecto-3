@@ -1,12 +1,32 @@
 const express = require('express');
+const _ = require('underscore');
 const Usuario = require('../models/usuario');
 const app = express();
 
   
 app.get('/usuario', function (req, res) {
-    res.json({
-        ok: '200',
-        msg: 'usuario consultado'   
+    let desde = req.query.desde || 0;
+    let hasta = req.query.hasta || 5;
+
+    Usuario.find({ activo: true })
+    .skip(Number(desde))
+    .limit(Number(hasta))
+
+    .exec((err, usuarios) => {
+        if(err) {
+            return res.status(400).json({
+                ok: false,
+                msg: 'ocurrio un error al consultar',
+                err
+            });
+        }
+
+        res.json({
+            ok: true,
+            msg: 'Usuarios listados con exito',
+            usuarios
+        });
+
     });
 });
   
@@ -38,16 +58,26 @@ app.post('/usuario', function (req, res) {
     });
 });
   
-app.put('/usuario/:id/:nombre', function (req, res) {
-    let id = req.params.id;
-    let nombre = req.params.nombre;
-  
-    res.json({
-        ok: '200',
-        msg: 'usuario actualizado',
-        id: id,
-        nombre, nombre
-    });
+app.put('/usuario/:id', function (req, res) {
+   let id = req.params.id;
+   let body = _.pick(req.body, ['edad', 'telefono', 'email']);
+
+   Usuario.findByIdAndUpdate(id, body, 
+    { new: true, runValidators: true, context: 'query' }, 
+    (err, usuario) => {
+        if(err){
+            return res.status(400).json({
+                ok: false,
+                msg: 'ocurrio un error en la actualizacion',
+                err 
+            });
+        }
+        res.json ({
+            ok: true,
+            msg: 'usuario actualizado con exito',
+            usuario: usuario
+        });
+    }); 
 });
   
 app.delete('/usuario/:id', function (req, res) {

@@ -10,7 +10,7 @@ let usuarioSchema = new Schema({
 
     primer_apellido: {
         type: String,
-        required: false
+        required: [true, 'este apellido es necesario']
         
     },
     segundo_apellido: {
